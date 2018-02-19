@@ -1,0 +1,11 @@
+# # IntelliJ
+./idea
+**/.idea
+**/*.iws
+**/*.iml
+**/out/
+
+# mpeltonen/sbt-idea plugin
+**/.idea_modules/
+
+**/*.class

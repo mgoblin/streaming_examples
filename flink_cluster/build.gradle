@@ -1,0 +1,69 @@
+buildscript {
+    // Repositories for gradle plugins
+    repositories {
+        /*maven {
+            url "http://sbtnexus.ca.sbrf.ru:8081/nexus/content/groups/esb_group"
+        }*/
+        jcenter()
+
+        dependencies {
+            classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+        }
+    }
+}
+
+
+apply plugin: 'scala'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+repositories {
+    /*maven {
+        url "http://sbtnexus.ca.sbrf.ru:8081/nexus/content/groups/public"
+    }*/
+    jcenter()
+}
+
+// Exclude log4j libs
+configurations.all {
+    exclude group: "org.slf4j", module: "slf4j-log4j12"
+    exclude group: "log4j"
+}
+
+dependencies {
+    // Use Scala 2.11
+    compile 'org.scala-lang:scala-library:2.11.8'
+
+    // Logging libraries
+    compile "com.typesafe.scala-logging:scala-logging_2.11:3.7.2"
+    compile "ch.qos.logback:logback-core:1.2.3"
+    compile "ch.qos.logback:logback-classic:1.2.3"
+    compile "org.slf4j:log4j-over-slf4j:1.7.7"
+
+    //Flink libraries
+    compile "org.apache.flink:flink-scala_2.11:1.3.2"
+    compile "org.apache.flink:flink-clients_2.11:1.3.2"
+    compile "org.apache.flink:flink-streaming-scala_2.11:1.3.2"
+    compile "org.apache.flink:flink-table_2.11:1.3.2"
+
+    // Use Scalatest for testing
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.apache.flink:flink-test-utils_2.11:1.3.2'
+
+    // Need scala-xml at test runtime
+    testRuntime 'org.scala-lang.modules:scala-xml_2.11:1.0.6'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ru.sbt.ClusterMain'
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency("com.typesafe.scala-logging:scala-logging_2.11:3.7.2"))
+    }
+    manifest {
+        inheritFrom project.tasks.jar.manifest
+    }
+}
